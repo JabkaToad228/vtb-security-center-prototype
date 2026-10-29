@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* Токены из Figma-макета (Frame 17–22) */
+@theme {
+  --font-sans: "Montserrat", system-ui, -apple-system, sans-serif;
+
+  --color-brand: #004fc6;
+  --color-brand-mid: #165fcf;
+  --color-sky: #ceeaff;
+  --color-pale: #aedbff;
+  --color-light: #daf2ff;
+  --color-cyan: #23b4ff;
+  --color-ok: #00900e;
+  --color-danger: #d90000;
+  --color-muted: #5a5f67;
+  --color-ink: #22172a;
+  --color-line: rgb(131 135 141 / 0.6);
+  --color-divider: rgb(181 183 187 / 0.3);
+  --color-toggle-off: #e1e2e4;
+  --color-track: #f6f6f8;
+
+  --text-t8: 8px;
+  --text-t8--line-height: normal;
+  --text-t10: 10px;
+  --text-t10--line-height: normal;
+  --text-t12: 12px;
+  --text-t12--line-height: normal;
+  --text-t14: 14px;
+  --text-t14--line-height: normal;
+  --text-t16: 16px;
+  --text-t16--line-height: normal;
+  --text-t20: 20px;
+  --text-t20--line-height: normal;
+  --text-t24: 24px;
+  --text-t24--line-height: normal;
+  --text-t30: 30px;
+  --text-t30--line-height: normal;
+  --text-t36: 36px;
+  --text-t36--line-height: normal;
+
+  --shadow-tabbar: 0 0 10px 0 rgb(2 80 198 / 0.5);
+}
+
+@layer base {
+  html {
+    line-height: normal;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background: #1e1e1e;
+    color: #000;
+    font-family: var(--font-sans);
+    overscroll-behavior: none;
+  }
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+    max-width: none;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  body {
+    background: #fff;
+  }
+}

@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="69.8784" height="47" viewBox="0 0 69.8784 47" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Chat_search">
+<path id="Rectangle 1" d="M40.7826 44.3108H18.4054C17.8531 44.3108 17.4054 43.8631 17.4054 43.3108V5.5C17.4054 3.29086 19.1963 1.5 21.4054 1.5H63.1351C65.3443 1.5 67.1351 3.29086 67.1351 5.5V21.2588" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="white"/>
+<path id="Vector 9" d="M28.5946 28.8514H36.0541" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="white"/>
+<path id="Vector 232" d="M28.5946 18.1486H44.7568" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="white"/>
+<mask id="stroke0_0_49" fill="white">
+<path d="M64.6486 32.4189C64.6486 37.6731 60.1957 41.9324 54.7027 41.9324C49.2097 41.9324 44.7568 37.6731 44.7568 32.4189C44.7568 27.1648 49.2097 22.9054 54.7027 22.9054C60.1957 22.9054 64.6486 27.1648 64.6486 32.4189Z"/>
+</mask>
+<path id="Ellipse 127" d="M64.6486 32.4189C64.6486 37.6731 60.1957 41.9324 54.7027 41.9324C49.2097 41.9324 44.7568 37.6731 44.7568 32.4189C44.7568 27.1648 49.2097 22.9054 54.7027 22.9054C60.1957 22.9054 64.6486 27.1648 64.6486 32.4189Z" stroke-width="6" stroke="white" mask="url(#stroke0_0_49)"/>
+<path id="Vector 231" d="M59.6757 38.3649L68.3784 45.5" stroke-width="3" stroke-linecap="round" stroke="white"/>
+</g>
+</svg>
