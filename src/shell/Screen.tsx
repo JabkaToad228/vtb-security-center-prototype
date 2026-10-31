@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
+import { useLocation, useNavigationType } from 'react-router-dom'
 import { Header } from './chrome'
 import { Sheet, useToast } from './overlay'
 import { useStore } from '../state/store'
@@ -13,6 +14,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
   const { state, dispatch } = useStore()
   const toast = useToast()
+  const location = useLocation()
+  // Системное «назад» не должно оставлять настройки висеть поверх другого экрана.
+  useEffect(() => setOpen(false), [location.key])
   return (
     <SettingsCtx.Provider value={() => setOpen(true)}>
       {children}
@@ -57,10 +61,32 @@ type ScreenProps = {
   pad?: boolean
 }
 
+/** Прокрутка каждой записи истории: вернулись «назад» — оказались там же, где ушли. */
+const scrollMemory = new Map<string, number>()
+
+function useScrollMemory(ref: RefObject<HTMLDivElement>) {
+  const { key } = useLocation()
+  const type = useNavigationType()
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (type === 'POP') el.scrollTop = scrollMemory.get(key) ?? 0
+    const save = () => scrollMemory.set(key, el.scrollTop)
+    el.addEventListener('scroll', save, { passive: true })
+    return () => {
+      // cleanup layout-эффекта идёт до удаления узла из DOM, так что позиция ещё читается
+      save()
+      el.removeEventListener('scroll', save)
+    }
+  }, [key, type, ref])
+}
+
 export function Screen({ title, children, back, logo, gear, right, bottom = 108, pad = true }: ScreenProps) {
   const openSettings = useOpenSettings()
+  const scroller = useRef<HTMLDivElement>(null)
+  useScrollMemory(scroller)
   return (
-    <div className="no-scrollbar absolute inset-0 overflow-y-auto overscroll-contain bg-white">
+    <div ref={scroller} className="no-scrollbar absolute inset-0 overflow-y-auto overscroll-contain bg-white">
       <Header title={title} back={back} logo={logo} gear={gear} onGear={openSettings} right={right} />
       <div className={pad ? 'px-[25px]' : ''} style={{ paddingBottom: `calc(${bottom}px + env(safe-area-inset-bottom))` }}>
         {children}

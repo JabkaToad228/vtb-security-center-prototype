@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import type { GameId } from '../../data/games'
 import { Header } from '../../shell/chrome'
 import { useStore } from '../../state/store'
 import { healthPercent } from '../../state/selectors'
 import { PrimaryButton } from '../../ui/kit'
+import { useNav } from '../../shell/nav'
 
 export function GameScreen({ title, children, top }: { title: string; children: ReactNode; top?: ReactNode }) {
   return (
@@ -53,7 +53,7 @@ export function GameResult({
   children?: ReactNode
   onReplay: () => void
 }) {
-  const navigate = useNavigate()
+  const { returnTo } = useNav()
   const pct = Math.round(score * 100)
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="pt-[10px]">
@@ -68,7 +68,7 @@ export function GameResult({
       {children && <div className="mt-[20px]">{children}</div>}
       <div className="mt-[20px] flex flex-col gap-[7px]">
         <PrimaryButton onClick={onReplay}>Сыграть ещё</PrimaryButton>
-        <PrimaryButton variant="soft" onClick={() => navigate('/games')}>
+        <PrimaryButton variant="soft" onClick={() => returnTo('/games')}>
           К играм
         </PrimaryButton>
       </div>

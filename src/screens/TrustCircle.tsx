@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { A } from '../assets'
 import { helpScenarios, myHelpers, people, permissionLines, personOrder, type PersonId } from '../data/people'
 import { Sheet, useToast } from '../shell/overlay'
@@ -8,6 +7,7 @@ import { useStore } from '../state/store'
 import { activeHelpers, plural } from '../state/selectors'
 import { HeroBadge } from '../ui/hero'
 import { Avatar, BookIcon, Card, CheckDot, LinkCard, PrimaryButton, Segmented, StatusLine, TextLink } from '../ui/kit'
+import { useNav } from '../shell/nav'
 
 type Tab = 'i-help' | 'help-me'
 
@@ -111,7 +111,7 @@ export function TrustCircle() {
 }
 
 function PersonCard({ id }: { id: PersonId }) {
-  const navigate = useNavigate()
+  const { go } = useNav()
   const { state } = useStore()
   const p = people[id]
   const h = state.helpers[id]
@@ -120,7 +120,7 @@ function PersonCard({ id }: { id: PersonId }) {
 
   return (
     <Card className="px-[15px] pb-[15px] pt-[15px]">
-      <button aria-label={`Настройки: ${p.name}`} onClick={() => navigate(`/trust/${id}`)} className="absolute right-[2px] top-[2px] grid size-[44px] place-items-center">
+      <button aria-label={`Настройки: ${p.name}`} onClick={() => go(`/trust/${id}`)} className="absolute right-[2px] top-[2px] grid size-[44px] place-items-center">
         <img alt="" src={A.iconGear} className="h-[19px] w-[18px]" />
       </button>
       <div className="flex gap-[9px]">
@@ -141,7 +141,7 @@ function PersonCard({ id }: { id: PersonId }) {
             ))}
           </ul>
           <div className="mt-[10px]">
-            <TextLink onClick={() => navigate(`/trust/${id}`)}>Безопасность пользователя</TextLink>
+            <TextLink onClick={() => go(`/trust/${id}`)}>Безопасность пользователя</TextLink>
           </div>
         </div>
       </div>

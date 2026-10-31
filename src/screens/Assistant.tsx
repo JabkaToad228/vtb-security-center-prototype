@@ -1,28 +1,51 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { A } from '../assets'
-import { chips, detectTopic, FALLBACK, GREETING, HELLO, replies, type Reply } from '../data/assistant'
+import { chips, detectTopic, FALLBACK, HELLO, replies } from '../data/assistant'
 import type { AssistantTopic } from '../data/cases'
 import { checkLink, findUrl, type LinkVerdict } from '../lib/linkCheck'
 import { Header } from '../shell/chrome'
+import { useNav } from '../shell/nav'
+import { useStore, type ChatMsg } from '../state/store'
 import { Chip } from '../ui/kit'
 
-type Msg = { id: number; from: 'bot' | 'user'; text: string; action?: Reply['action']; verdict?: LinkVerdict; animate?: boolean }
-
 const isTopic = (t: string | null): t is AssistantTopic => chips.some((c) => c.topic === t)
+
+type Bot = { msg: Omit<ChatMsg, 'id' | 'from'>; awaitLink: boolean }
+
+/** Чистая функция: что ответить на сообщение. Побочные эффекты (набор, задержка) — в экране. */
+function reply(text: string, forced: AssistantTopic | undefined, awaitLink: boolean): Bot {
+  let wait = awaitLink
+  const url = findUrl(text)
+  if (url) {
+    wait = false
+    const verdict = checkLink(url)
+    if (verdict) {
+      const intro = { safe: 'Проверил ссылку.', warn: 'Проверил ссылку — есть поводы насторожиться.', danger: 'Осторожно! Это похоже на фишинг.' }[verdict.level]
+      return { msg: { text: intro, verdict }, awaitLink: false }
+    }
+  }
+  const topic = forced ?? detectTopic(text)
+  if (topic === 'link') return { msg: { text: replies.link.text }, awaitLink: true }
+  if (wait && !topic) return { msg: { text: 'Не вижу ссылку. Вставьте адрес целиком, например vtb-bonus24.ru/pay' }, awaitLink: true }
+  if (topic === 'hello') return { msg: { text: HELLO }, awaitLink: wait }
+  if (topic) return { msg: { text: replies[topic].text, action: replies[topic].action }, awaitLink: wait }
+  return { msg: { text: FALLBACK }, awaitLink: wait }
+}
 
 /** Новый экран: скриптованный AI-помощник. Ответы и проверка ссылок работают локально. */
 export function Assistant() {
   const [params] = useSearchParams()
-  const navigate = useNavigate()
-  const [msgs, setMsgs] = useState<Msg[]>([{ id: 0, from: 'bot', text: GREETING }])
-  const [typing, setTyping] = useState(false)
+  const location = useLocation()
+  const { go } = useNav()
+  const { state, dispatch } = useStore()
+  const { msgs, typing, awaitLink } = state.chat
   const [draft, setDraft] = useState('')
-  const awaitLink = useRef(false)
-  const nextId = useRef(1)
   const scroller = useRef<HTMLDivElement>(null)
-  const started = useRef(false)
+  const started = useRef<string | null>(null)
+  // Сообщения, пришедшие до открытия экрана, показываем сразу целиком, без «печати».
+  const freshAfter = useRef(msgs[msgs.length - 1].id)
 
   const scrollDown = () => {
     const el = scroller.current
@@ -30,46 +53,22 @@ export function Assistant() {
   }
   useEffect(scrollDown, [msgs, typing])
 
-  function botSay(m: Omit<Msg, 'id' | 'from'>) {
-    setTyping(true)
-    window.setTimeout(() => {
-      setTyping(false)
-      setMsgs((prev) => [...prev, { ...m, id: nextId.current++, from: 'bot', animate: true }])
-    }, 650 + Math.random() * 350)
-  }
-
-  function respond(text: string, forced?: AssistantTopic) {
-    const url = findUrl(text)
-    if (url) {
-      const verdict = checkLink(url)
-      awaitLink.current = false
-      if (verdict) {
-        const intro = { safe: 'Проверил ссылку.', warn: 'Проверил ссылку — есть поводы насторожиться.', danger: 'Осторожно! Это похоже на фишинг.' }[verdict.level]
-        return botSay({ text: intro, verdict })
-      }
-    }
-    const topic = forced ?? detectTopic(text)
-    if (topic === 'link') {
-      awaitLink.current = true
-      return botSay({ text: replies.link.text })
-    }
-    if (awaitLink.current && !topic) return botSay({ text: 'Не вижу ссылку. Вставьте адрес целиком, например vtb-bonus24.ru/pay' })
-    if (topic === 'hello') return botSay({ text: HELLO })
-    if (topic) return botSay({ text: replies[topic].text, action: replies[topic].action })
-    return botSay({ text: FALLBACK })
-  }
-
   function send(text: string, forced?: AssistantTopic) {
     const t = text.trim()
     if (!t || typing) return
-    setMsgs((prev) => [...prev, { id: nextId.current++, from: 'user', text: t }])
+    const bot = reply(t, forced, awaitLink)
+    const epoch = state.epoch
+    dispatch({ type: 'chatUser', text: t })
     setDraft('')
-    respond(t, forced)
+    // dispatch живёт в провайдере: ответ дойдёт, даже если пользователь уже ушёл с экрана
+    window.setTimeout(() => dispatch({ type: 'chatBot', epoch, ...bot }), 650 + Math.random() * 350)
   }
 
+  // Стартовый вопрос из `?topic=` отправляем один раз на запись истории: при возврате на экран не дублируем.
   useEffect(() => {
-    if (started.current) return
-    started.current = true
+    if (started.current === location.key || state.chat.handledKey === location.key) return
+    started.current = location.key
+    dispatch({ type: 'chatHandled', key: location.key })
     const topic = params.get('topic')
     if (isTopic(topic)) {
       const chip = chips.find((c) => c.topic === topic)!
@@ -90,7 +89,7 @@ export function Assistant() {
       <div ref={scroller} className="no-scrollbar flex-1 overflow-y-auto px-[16px] pb-[12px] pt-[4px]">
         <div className="flex flex-col gap-[10px]">
           {msgs.map((m) => (
-            <Bubble key={m.id} m={m} onAction={(to) => navigate(to)} onTick={scrollDown} />
+            <Bubble key={m.id} m={m} animate={m.from === 'bot' && m.id > freshAfter.current} onAction={go} onTick={scrollDown} />
           ))}
           <AnimatePresence>
             {typing && (
@@ -149,8 +148,8 @@ const BotAvatar = () => (
   </span>
 )
 
-function Bubble({ m, onAction, onTick }: { m: Msg; onAction: (to: string) => void; onTick: () => void }) {
-  const [shown, setShown] = useState(m.animate ? 0 : m.text.length)
+function Bubble({ m, animate, onAction, onTick }: { m: ChatMsg; animate: boolean; onAction: (to: string) => void; onTick: () => void }) {
+  const [shown, setShown] = useState(animate ? 0 : m.text.length)
   const done = shown >= m.text.length
 
   useEffect(() => {

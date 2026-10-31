@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { caseById } from '../data/cases'
 import { people } from '../data/people'
 import { EVENT_WEIGHT } from '../data/risk'
@@ -8,12 +8,13 @@ import { Screen } from '../shell/Screen'
 import { useStore } from '../state/store'
 import { Avatar, Card, CheckDot, Divider, PrimaryButton, StatusLine } from '../ui/kit'
 import { OutcomeBanner } from '../ui/OutcomeBanner'
+import { useNav } from '../shell/nav'
 
 /** Frame 21 — «Разбор ситуации». Шаблон, заполняемый данными кейса. */
 export function CaseReview() {
   const { caseId = '' } = useParams()
   const c = caseById(caseId)
-  const navigate = useNavigate()
+  const { go, back } = useNav()
   const toast = useToast()
   const { state, dispatch } = useStore()
   const eventOpen = c?.riskEventId ? state.events[c.riskEventId] === 'open' : false
@@ -94,7 +95,7 @@ export function CaseReview() {
               onClick={() => {
                 dispatch({ type: 'event', id: 'sim', status: 'reviewed' })
                 toast(`Отлично, проверка снята · +${EVENT_WEIGHT}% к защите`)
-                navigate(-1)
+                back()
               }}
             >
               Это был я
@@ -113,7 +114,7 @@ export function CaseReview() {
         {c.owner !== 'me' && (
           <PrimaryButton onClick={() => toast(`Звоним ${dative}…`)}>Позвонить {dative}</PrimaryButton>
         )}
-        <PrimaryButton variant="soft" onClick={() => navigate(`/assistant?topic=${c.topic}`)}>
+        <PrimaryButton variant="soft" onClick={() => go(`/assistant?topic=${c.topic}`)}>
           Спросить AI-помощника
         </PrimaryButton>
       </div>

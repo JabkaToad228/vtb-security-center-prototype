@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { A } from '../assets'
 import { caseById, casesFor } from '../data/cases'
 import { helpScenarios, helpToggles, people, type HelpToggleId, type PersonId } from '../data/people'
@@ -8,6 +8,7 @@ import { Screen } from '../shell/Screen'
 import { useStore } from '../state/store'
 import { plural } from '../state/selectors'
 import { Avatar, BookIcon, Card, Divider, LinkCard, PrimaryButton, StatusLine, TimeIcon, Toggle } from '../ui/kit'
+import { useNav } from '../shell/nav'
 
 const toggleIcon: Record<HelpToggleId, string> = {
   calls: A.iconPhoneRow,
@@ -19,7 +20,7 @@ const toggleIcon: Record<HelpToggleId, string> = {
 /** Frame 20 — «Помощь близким»: настройки помощи конкретному человеку. */
 export function HelpRelative() {
   const { personId } = useParams()
-  const navigate = useNavigate()
+  const { go } = useNav()
   const toast = useToast()
   const { state, dispatch } = useStore()
   const [confirmOff, setConfirmOff] = useState(false)
@@ -46,7 +47,7 @@ export function HelpRelative() {
       </div>
 
       {active && h.enabled && (
-        <button onClick={() => navigate(`/case/${active.id}`)} className="mt-[15px] flex w-full items-center gap-[12px] rounded-[15px] border border-danger/40 bg-[#fff1f1] px-[15px] py-[12px] text-left">
+        <button onClick={() => go(`/case/${active.id}`)} className="mt-[15px] flex w-full items-center gap-[12px] rounded-[15px] border border-danger/40 bg-[#fff1f1] px-[15px] py-[12px] text-left">
           <span className="flex-1">
             <span className="block text-t14 font-bold">Новая ситуация: {active.title.toLowerCase()}</span>
             <span className="block text-t12">{active.date} · нужен ваш разбор</span>
@@ -101,7 +102,7 @@ export function HelpRelative() {
           icon={<TimeIcon />}
           title="История защиты"
           subtitle={`${history.length} ${plural(history.length, ['ситуация', 'ситуации', 'ситуаций'])}`}
-          onClick={() => navigate(`/history?person=${id}`)}
+          onClick={() => go(`/history?person=${id}`)}
         />
         <LinkCard icon={<BookIcon />} title="Сценарии помощи" subtitle="Узнай, как обезопасить близкого" onClick={() => setScenarios(true)} />
       </div>

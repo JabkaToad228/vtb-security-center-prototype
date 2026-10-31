@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { useNavigate } from 'react-router-dom'
 import { quizSituations } from '../../data/games/quiz'
 import { useStore } from '../../state/store'
 import { PrimaryButton } from '../../ui/kit'
 import { GameScreen, ProgressDots } from './GameKit'
+import { useNav } from '../../shell/nav'
 
 /** «А вы бы поверили?» — баннер с главной: 5 ситуаций, у каждой своя уловка. */
 export function WouldYouBelieve() {
-  const navigate = useNavigate()
+  const { returnTo } = useNav()
   const { state, dispatch } = useStore()
   const firstOpen = quizSituations.findIndex((q) => !state.quizDone.includes(q.id))
   const [idx, setIdx] = useState(firstOpen === -1 ? 0 : firstOpen)
@@ -34,7 +34,7 @@ export function WouldYouBelieve() {
           <h2 className="text-t24 font-bold">Все 5 ситуаций пройдены</h2>
           <p className="mt-[8px] text-t16">Теперь вы знаете главные уловки мошенников. Поделитесь ими с близкими.</p>
           <div className="mt-[24px] flex flex-col gap-[7px]">
-            <PrimaryButton onClick={() => navigate('/games')}>Другие игры</PrimaryButton>
+            <PrimaryButton onClick={() => returnTo('/games')}>Другие игры</PrimaryButton>
             <PrimaryButton
               variant="soft"
               onClick={() => {

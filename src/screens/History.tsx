@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { A } from '../assets'
 import { cases, historyStats, type Case } from '../data/cases'
 import { people } from '../data/people'
@@ -7,6 +7,7 @@ import { plural } from '../state/selectors'
 import { useStore } from '../state/store'
 import { Avatar, Card, Chip } from '../ui/kit'
 import { OutcomeBanner } from '../ui/OutcomeBanner'
+import { useNav } from '../shell/nav'
 
 const filters = [
   { id: 'all', label: 'Все' },
@@ -19,7 +20,7 @@ type Filter = (typeof filters)[number]['id']
 /** Новый экран: лента всех разобранных ситуаций. */
 export function History() {
   const [params, setParams] = useSearchParams()
-  const navigate = useNavigate()
+  const { go } = useNav()
   const raw = params.get('person')
   const filter: Filter = filters.some((f) => f.id === raw) ? (raw as Filter) : 'all'
   const list = filter === 'all' ? cases : cases.filter((c) => c.owner === filter)
@@ -47,7 +48,7 @@ export function History() {
             {list
               .filter((c) => c.month === m)
               .map((c) => (
-                <HistoryItem key={c.id} c={c} onClick={() => navigate(`/case/${c.id}`)} />
+                <HistoryItem key={c.id} c={c} onClick={() => go(`/case/${c.id}`)} />
               ))}
           </div>
         </section>

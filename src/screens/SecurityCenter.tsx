@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { A } from '../assets'
 import { quizSituations } from '../data/games/quiz'
 import { Screen } from '../shell/Screen'
@@ -6,10 +5,11 @@ import { useStore } from '../state/store'
 import { activeHelpers, healthPercent, plural, protectionPercent, recommendations } from '../state/selectors'
 import { ProtectionHero } from '../ui/hero'
 import { AssistantTile, HistoryTile, RiskTile, TrustTile } from '../ui/tiles'
+import { useNav } from '../shell/nav'
 
 /** Frame 17 — главный экран «Центр безопасности». */
 export function SecurityCenter() {
-  const navigate = useNavigate()
+  const { go } = useNav()
   const { state } = useStore()
   const pct = protectionPercent(state)
   const recs = recommendations(state)
@@ -31,18 +31,18 @@ export function SecurityCenter() {
         <RiskTile
           title="Риск-профиль"
           subtitle={recs ? `${recs} ${plural(recs, ['рекомендация', 'рекомендации', 'рекомендаций'])}` : 'Всё настроено'}
-          onClick={() => navigate('/risk')}
+          onClick={() => go('/risk')}
         />
         <TrustTile
           title="Круг доверия"
           subtitle={`${helpers} ${plural(helpers, ['близкий', 'близких', 'близких'])} на связи`}
-          onClick={() => navigate('/trust')}
+          onClick={() => go('/trust')}
         />
-        <AssistantTile title="AI-помощник" subtitle="Узнать возможности" onClick={() => navigate('/assistant')} />
-        <HistoryTile title="История защиты" subtitle="Обновлено вчера" onClick={() => navigate('/history')} />
+        <AssistantTile title="AI-помощник" subtitle="Узнать возможности" onClick={() => go('/assistant')} />
+        <HistoryTile title="История защиты" subtitle="Обновлено вчера" onClick={() => go('/history')} />
       </div>
 
-      <button onClick={() => navigate('/quiz')} className="relative mt-[7px] block h-[64px] w-full overflow-hidden rounded-[10px] bg-light text-left active:bg-sky">
+      <button onClick={() => go('/quiz')} className="relative mt-[7px] block h-[64px] w-full overflow-hidden rounded-[10px] bg-light text-left active:bg-sky">
         <span className="absolute left-[15px] top-[8px] text-t14 font-bold">А вы бы поверили?</span>
         <span className="absolute left-[15px] top-[25px] text-t12">Узнай уловку мошенников</span>
         <span className="absolute left-[15px] top-[51px] flex gap-[2px]">
@@ -56,7 +56,7 @@ export function SecurityCenter() {
         <img alt="" src={A.chevronBanner} className="absolute right-[14px] top-[11.6px]" />
       </button>
 
-      <button onClick={() => navigate('/games')} className="relative mt-[7px] flex h-[64px] w-full items-center overflow-hidden rounded-[10px] bg-brand text-left text-white active:bg-[#003f9e]">
+      <button onClick={() => go('/games')} className="relative mt-[7px] flex h-[64px] w-full items-center overflow-hidden rounded-[10px] bg-brand text-left text-white active:bg-[#003f9e]">
         <span className="ml-[15px] flex flex-col">
           <span className="text-t14 font-bold">Игры для безопасности</span>
           <span className="mt-[1px] text-t12">Цифровое здоровье: {healthPercent(state)}%</span>

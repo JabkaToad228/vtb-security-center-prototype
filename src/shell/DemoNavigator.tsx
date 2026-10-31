@@ -1,6 +1,7 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useStore } from '../state/store'
 import { healthPercent, protectionPercent } from '../state/selectors'
+import { useNav } from './nav'
 import { useToast } from './overlay'
 
 const groups: { title: string; items: { label: string; to: string; note?: string }[] }[] = [
@@ -36,7 +37,7 @@ const groups: { title: string; items: { label: string; to: string; note?: string
 
 /** Панель для защиты кейса на десктопе: быстрые переходы, метрики и сброс демо. */
 export function DemoNavigator() {
-  const navigate = useNavigate()
+  const { jump, returnTo } = useNav()
   const { pathname } = useLocation()
   const { state, dispatch } = useStore()
   const toast = useToast()
@@ -58,7 +59,7 @@ export function DemoNavigator() {
               return (
                 <li key={i.to}>
                   <button
-                    onClick={() => navigate(i.to)}
+                    onClick={() => jump(i.to)}
                     className={`flex w-full items-center justify-between rounded-[8px] px-[10px] py-[6px] text-left text-[13px] transition-colors ${active ? 'bg-white/15 font-semibold' : 'text-white/80 hover:bg-white/8'}`}
                   >
                     {i.label}
@@ -73,7 +74,7 @@ export function DemoNavigator() {
       <button
         onClick={() => {
           dispatch({ type: 'reset' })
-          navigate('/')
+          returnTo('/')
           toast('Демо сброшено к состоянию макета')
         }}
         className="mt-[18px] w-full rounded-[10px] border border-white/25 py-[9px] text-[13px] font-semibold hover:bg-white/10"

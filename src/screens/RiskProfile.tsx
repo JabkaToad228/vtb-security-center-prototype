@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { useNavigate } from 'react-router-dom'
 import { A } from '../assets'
 import { checklist, EVENT_WEIGHT, type RiskEvent } from '../data/risk'
 import { useToast } from '../shell/overlay'
@@ -8,6 +7,7 @@ import { useStore } from '../state/store'
 import { openEvents, plural } from '../state/selectors'
 import { HeroBadge } from '../ui/hero'
 import { Card, CheckDot, PrimaryButton, TextLink } from '../ui/kit'
+import { useNav } from '../shell/nav'
 
 /** Frame 18 — «Риск профиль»: события для проверки и чек-лист. */
 export function RiskProfile() {
@@ -84,7 +84,7 @@ export function RiskProfile() {
 }
 
 function SimCard({ event }: { event: RiskEvent }) {
-  const navigate = useNavigate()
+  const { go } = useNav()
   return (
     <Card className="min-h-[147px] pb-[14px] pl-[44px] pr-[14px] pt-[14px]">
       <img alt="" src={A.iconSim} className="absolute left-[7px] top-[10px] h-[32px] w-[27px] object-cover" />
@@ -92,14 +92,14 @@ function SimCard({ event }: { event: RiskEvent }) {
       <div className="mt-[3px] text-t16 font-bold">{event.title}</div>
       <p className="mt-[3px] max-w-[267px] text-t14">{event.text}</p>
       <div className="mt-[10px] -ml-[1px]">
-        <TextLink onClick={() => navigate(`/case/${event.caseId}`)}>Подробнее</TextLink>
+        <TextLink onClick={() => go(`/case/${event.caseId}`)}>Подробнее</TextLink>
       </div>
     </Card>
   )
 }
 
 function CallCard({ event, onKnown }: { event: RiskEvent; onKnown: () => void }) {
-  const navigate = useNavigate()
+  const { go } = useNav()
   return (
     <Card tone="light" className="min-h-[202px] pb-[15px] pt-[14px]">
       <img alt="" src={A.iconPhone} className="absolute left-[10px] top-[14px]" />
@@ -109,7 +109,7 @@ function CallCard({ event, onKnown }: { event: RiskEvent; onKnown: () => void })
         <p className="mt-[3px] max-w-[267px] text-t14">{event.text}</p>
       </div>
       <div className="mt-[14px] px-[15px]">
-        <PrimaryButton onClick={() => navigate(`/case/${event.caseId}`)}>Разобрать звонок</PrimaryButton>
+        <PrimaryButton onClick={() => go(`/case/${event.caseId}`)}>Разобрать звонок</PrimaryButton>
         <button onClick={onKnown} className="mx-auto mt-[12px] block text-t12 font-bold text-brand">
           Я знаю звонившего
         </button>

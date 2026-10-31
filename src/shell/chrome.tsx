@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { A } from '../assets'
+import { useNav } from './nav'
 import { useToast } from './overlay'
 
 /** Статус-бар iPhone из макета (только в режиме рамки на десктопе). */
@@ -17,18 +17,9 @@ export function StatusBar() {
   )
 }
 
-export function useBack(fallback = '/') {
-  const navigate = useNavigate()
-  return () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
-    if (idx > 0) navigate(-1)
-    else navigate(fallback, { replace: true })
-  }
-}
-
 /** Шапка экрана: назад · заголовок · шестерёнка (или логотип на главной). Центр строки — y=55 в макете. */
 export function Header({ title, back = true, logo, gear = true, onGear, right }: { title: string; back?: boolean; logo?: boolean; gear?: boolean; onGear?: () => void; right?: ReactNode }) {
-  const goBack = useBack()
+  const { back: goBack } = useNav()
   return (
     <div className="sticky top-0 z-20 h-[36px] shrink-0 bg-white">
       <div className="relative h-[22px]">
@@ -60,7 +51,7 @@ const tabs = [
 /** Плавающий таббар 325×60 из макета; активна вкладка «Сервисы». */
 export function TabBar() {
   const toast = useToast()
-  const navigate = useNavigate()
+  const { returnTo } = useNav()
   return (
     <nav className="absolute bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-30 h-[60px] w-[325px] -translate-x-1/2 rounded-[40px] bg-white shadow-tabbar">
       {tabs.map((t) => {
@@ -68,7 +59,7 @@ export function TabBar() {
         return (
           <button
             key={t.id}
-            onClick={() => (active ? navigate('/') : toast('Раздел вне прототипа'))}
+            onClick={() => (active ? returnTo('/') : toast('Раздел вне прототипа'))}
             className="absolute top-0 flex h-full w-[60px] -translate-x-1/2 flex-col items-center"
             style={{ left: t.x }}
           >

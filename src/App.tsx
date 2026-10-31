@@ -1,7 +1,9 @@
+import { useLayoutEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom'
 import { TabBar } from './shell/chrome'
 import { DemoNavigator } from './shell/DemoNavigator'
+import { NavTracker } from './shell/nav'
 import { ToastProvider } from './shell/overlay'
 import { PhoneFrame } from './shell/PhoneFrame'
 import { SettingsProvider } from './shell/Screen'
@@ -23,18 +25,33 @@ import { WouldYouBelieve } from './screens/games/WouldYouBelieve'
 /** Экраны в фокусе (чат, игры) показываются без таббара. */
 const hideTabBar = (path: string) => path.startsWith('/assistant') || path.startsWith('/games/') || path.startsWith('/quiz')
 
+/** Сколько длится въезд экрана; пока он идёт, тапы по новому экрану не проходят. */
+const ENTER_MS = 220
+
 function AnimatedRoutes() {
   const location = useLocation()
-  const back = useNavigationType() === 'POP'
+  const type = useNavigationType()
+  // Тап «насквозь»: второй тап двойного нажатия иначе попадал бы по кнопке уже нового экрана.
+  const [settling, setSettling] = useState(true)
+  useLayoutEffect(() => {
+    setSettling(true)
+    const t = window.setTimeout(() => setSettling(false), ENTER_MS)
+    return () => window.clearTimeout(t)
+  }, [location.pathname])
+
+  // POP — вернулись (экран приезжает слева), PUSH — вперёд (справа), REPLACE — без сдвига.
+  const from = type === 'POP' ? -24 : type === 'PUSH' ? 24 : 0
+
   return (
     <>
       {/* Только анимация входа: прошлый экран размонтируется сразу и не копится в фоне. */}
       <motion.div
         key={location.pathname}
         className="absolute inset-0"
-        initial={{ opacity: 0, x: back ? -24 : 24 }}
+        style={{ pointerEvents: settling ? 'none' : 'auto' }}
+        initial={{ opacity: 0, x: from }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
+        transition={{ duration: ENTER_MS / 1000, ease: 'easeOut' }}
       >
         <Routes location={location}>
           <Route path="/" element={<SecurityCenter />} />
@@ -61,6 +78,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <HashRouter>
+      <NavTracker />
       <StoreProvider>
         <ToastProvider>
           <SettingsProvider>
