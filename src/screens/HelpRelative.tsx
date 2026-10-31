@@ -131,6 +131,7 @@ export function HelpRelative() {
             <Card key={s.title} tone="light" className="px-[15px] py-[12px]">
               <div className="text-t14 font-bold">{s.title}</div>
               <p className="mt-[3px] text-t14">{s.text}</p>
+              {s.source && <div className="mt-[6px] text-t12 font-semibold text-brand">{s.source}</div>}
             </Card>
           ))}
         </div>

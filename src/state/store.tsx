@@ -55,7 +55,7 @@ export const initialState: State = {
     mama: { enabled: true, toggles: { ...people.mama.defaultToggles } },
     papa: { enabled: true, toggles: { ...people.papa.defaultToggles } },
   },
-  games: { patrol: 0.6, oncall: 0, duo: 0, believe: 0.6, quiz: 0.6 },
+  games: { patrol: 0.6, oncall: 0, duo: 0, believe: 0.6, quiz: 0.6, record: 0 },
   quizDone: ['q1', 'q2', 'q3'],
   chat: initialChat,
 }
@@ -120,7 +120,9 @@ function load(): State {
     if (!raw) return initialState
     const parsed = JSON.parse(raw) as State
     // чат и эпоха живут только в рамках открытой страницы
-    return parsed.version === initialState.version ? { ...initialState, ...parsed, chat: initialChat, epoch: 0 } : initialState
+    if (parsed.version !== initialState.version) return initialState
+    // games сливаем глубоко: у сохранений до появления новой игры нет её ключа
+    return { ...initialState, ...parsed, games: { ...initialState.games, ...parsed.games }, chat: initialChat, epoch: 0 }
   } catch {
     return initialState
   }

@@ -12,12 +12,16 @@ export function WouldYouBelieve() {
   const { state, dispatch } = useStore()
   const firstOpen = quizSituations.findIndex((q) => !state.quizDone.includes(q.id))
   const [idx, setIdx] = useState(firstOpen === -1 ? 0 : firstOpen)
+  // Прогресс текущего прохождения. Общий счётчик в сторе нужен баннеру на главной,
+  // а полоска здесь при повторном прохождении должна начинаться с нуля.
+  const [run, setRun] = useState<string[]>(() => (firstOpen === -1 ? [] : quizSituations.filter((q) => state.quizDone.includes(q.id)).map((q) => q.id)))
   const [answer, setAnswer] = useState<boolean | null>(null)
   const [finished, setFinished] = useState(false)
   const q = quizSituations[idx]
 
   const reveal = (believed: boolean) => {
     setAnswer(believed)
+    setRun((r) => (r.includes(q.id) ? r : [...r, q.id]))
     dispatch({ type: 'quizDone', id: q.id, total: quizSituations.length })
   }
 
@@ -27,21 +31,22 @@ export function WouldYouBelieve() {
     else setFinished(true)
   }
 
+  const restart = () => {
+    setRun([])
+    setAnswer(null)
+    setIdx(0)
+    setFinished(false)
+  }
+
   if (finished)
     return (
       <GameScreen title="А вы бы поверили?">
         <div className="pt-[30px] text-center">
-          <h2 className="text-t24 font-bold">Все 5 ситуаций пройдены</h2>
+          <h2 className="text-t24 font-bold">Все {quizSituations.length} ситуаций пройдены</h2>
           <p className="mt-[8px] text-t16">Теперь вы знаете главные уловки мошенников. Поделитесь ими с близкими.</p>
           <div className="mt-[24px] flex flex-col gap-[7px]">
             <PrimaryButton onClick={() => returnTo('/games')}>Другие игры</PrimaryButton>
-            <PrimaryButton
-              variant="soft"
-              onClick={() => {
-                setIdx(0)
-                setFinished(false)
-              }}
-            >
+            <PrimaryButton variant="soft" onClick={restart}>
               Пройти заново
             </PrimaryButton>
           </div>
@@ -55,9 +60,9 @@ export function WouldYouBelieve() {
       top={
         <div>
           <div className="px-[25px] pb-[8px] text-t14">
-            Ситуация {idx + 1} из {quizSituations.length} · пройдено {state.quizDone.length}
+            Ситуация {idx + 1} из {quizSituations.length}
           </div>
-          <ProgressDots total={quizSituations.length} done={state.quizDone.length} />
+          <ProgressDots total={quizSituations.length} done={run.length} />
         </div>
       }
     >

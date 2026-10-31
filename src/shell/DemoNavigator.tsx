@@ -30,6 +30,7 @@ const groups: { title: string; items: { label: string; to: string; note?: string
       { label: 'На связи', to: '/games/on-call' },
       { label: 'Дело на двоих', to: '/games/duo' },
       { label: 'Верю — не верю', to: '/games/believe' },
+      { label: 'Запись звонка', to: '/games/record' },
       { label: 'А вы бы поверили?', to: '/quiz' },
     ],
   },

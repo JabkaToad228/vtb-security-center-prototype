@@ -45,6 +45,26 @@ function saveStack() {
   }
 }
 
+/**
+ * Открытие приложения всегда начинается с главного экрана, как у нативного приложения:
+ * браузер мог восстановить вкладку на `#/trust` или прислать старую ссылку с хэшем.
+ * Исключения: возврат кнопками истории (страница уже была открыта) и явная ссылка
+ * для слайдов `?open=/games` — она открывает экран, а «назад» ведёт к его родителю.
+ * Вызывается до создания роутера.
+ */
+export function startOnHome() {
+  const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  if (entry?.type === 'back_forward') return
+  const params = new URLSearchParams(window.location.search)
+  const open = params.get('open')
+  params.delete('open')
+  const query = params.toString()
+  const target = open && open.startsWith('/') ? open : '/'
+  stack.length = 0
+  saveStack()
+  window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}#${target}`)
+}
+
 const historyIndex = () => (window.history.state as { idx?: number } | null)?.idx ?? 0
 const fullPath = (l: { pathname: string; search: string }) => l.pathname + l.search
 

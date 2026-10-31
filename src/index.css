@@ -69,6 +69,17 @@
   }
 }
 
+/* Звуковая волна в игре «Запись звонка» */
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 @layer utilities {
   .no-scrollbar {
     scrollbar-width: none;

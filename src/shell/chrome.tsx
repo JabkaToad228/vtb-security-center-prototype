@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { A } from '../assets'
 import { useNav } from './nav'
-import { useToast } from './overlay'
+import { useBanner } from './overlay'
 
 /** Статус-бар iPhone из макета (только в режиме рамки на десктопе). */
 export function StatusBar() {
@@ -50,8 +50,13 @@ const tabs = [
 
 /** Плавающий таббар 325×60 из макета; активна вкладка «Сервисы». */
 export function TabBar() {
-  const toast = useToast()
+  const banner = useBanner()
   const { returnTo } = useNav()
+  const outOfScope = (label: string) =>
+    banner({
+      title: 'Редизайн приложения ВТБ не предусмотрен бюджетом',
+      text: `Раздел «${label}» остался как есть. В прототипе работает только «Сервисы» → Центр безопасности.`,
+    })
   return (
     <nav className="absolute bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-30 h-[60px] w-[325px] -translate-x-1/2 rounded-[40px] bg-white shadow-tabbar">
       {tabs.map((t) => {
@@ -59,7 +64,7 @@ export function TabBar() {
         return (
           <button
             key={t.id}
-            onClick={() => (active ? returnTo('/') : toast('Раздел вне прототипа'))}
+            onClick={() => (active ? returnTo('/') : outOfScope(t.label))}
             className="absolute top-0 flex h-full w-[60px] -translate-x-1/2 flex-col items-center"
             style={{ left: t.x }}
           >

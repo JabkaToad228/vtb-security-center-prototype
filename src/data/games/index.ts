@@ -1,4 +1,4 @@
-export type GameId = 'patrol' | 'oncall' | 'duo' | 'believe' | 'quiz'
+export type GameId = 'patrol' | 'oncall' | 'duo' | 'believe' | 'quiz' | 'record'
 
 export type GameMeta = { id: GameId; title: string; route: string; weight: number }
 
@@ -7,8 +7,9 @@ export const HEALTH_BASE = 35
 
 export const games: Record<GameId, GameMeta> = {
   patrol: { id: 'patrol', title: 'Фрод-патруль', route: '/games/patrol', weight: 15 },
-  oncall: { id: 'oncall', title: 'На связи', route: '/games/on-call', weight: 15 },
-  duo: { id: 'duo', title: 'Дело на двоих', route: '/games/duo', weight: 10 },
+  oncall: { id: 'oncall', title: 'На связи', route: '/games/on-call', weight: 10 },
+  duo: { id: 'duo', title: 'Дело на двоих', route: '/games/duo', weight: 5 },
   believe: { id: 'believe', title: 'Верю — не верю', route: '/games/believe', weight: 15 },
   quiz: { id: 'quiz', title: 'А вы бы поверили?', route: '/quiz', weight: 10 },
+  record: { id: 'record', title: 'Запись звонка', route: '/games/record', weight: 10 },
 }

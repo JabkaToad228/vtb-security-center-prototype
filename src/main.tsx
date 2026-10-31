@@ -5,6 +5,9 @@ import '@fontsource/montserrat/600.css'
 import '@fontsource/montserrat/700.css'
 import './index.css'
 import App from './App'
+import { startOnHome } from './shell/nav'
+
+startOnHome()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

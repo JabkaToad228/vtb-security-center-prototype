@@ -17,6 +17,7 @@ import { RiskProfile } from './screens/RiskProfile'
 import { SecurityCenter } from './screens/SecurityCenter'
 import { TrustCircle } from './screens/TrustCircle'
 import { BelieveOrNot } from './screens/games/BelieveOrNot'
+import { CallRecord } from './screens/games/CallRecord'
 import { DuoCase } from './screens/games/DuoCase'
 import { FraudPatrol } from './screens/games/FraudPatrol'
 import { OnCall } from './screens/games/OnCall'
@@ -66,6 +67,7 @@ function AnimatedRoutes() {
           <Route path="/games/on-call" element={<OnCall />} />
           <Route path="/games/duo" element={<DuoCase />} />
           <Route path="/games/believe" element={<BelieveOrNot />} />
+          <Route path="/games/record" element={<CallRecord />} />
           <Route path="/quiz" element={<WouldYouBelieve />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
