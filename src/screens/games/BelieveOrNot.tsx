@@ -83,7 +83,7 @@ export function BelieveOrNot() {
       <GameScreen title="Верю — не верю">
         <GameIntro
           bg="#165fcf"
-          icon={<img alt="" src={A.iconCheckRing} className="translate-x-[2px] translate-y-[2px]" />}
+          icon={<img alt="" src={A.iconCheckRing} />}
           title="Проверьте интуицию за минуту"
           text={`${believeCards.length} сообщений и звонков. Смахните вправо — «Верю», влево — «Не верю». Успейте за ${BELIEVE_SECONDS} секунд.`}
           onStart={start}

@@ -132,7 +132,9 @@ export function PatrolTile(p: TileProps) {
     <TileShell bg="#004fc6" height={185} onClick={p.onClick} label={p.title}>
       {deepGlows}
       <GlassDot />
-      <img alt="" src={A.iconChatSearch} className="absolute" style={{ left: 'calc(50% - 41.5px)', top: 33.5 }} />
+      <Centered x={79.5} y={57}>
+        <img alt="" src={A.iconChatSearch} />
+      </Centered>
       <GameText {...p} w={116} />
       {p.done && <DoneBadge />}
     </TileShell>
@@ -173,7 +175,9 @@ export function BelieveTile(p: TileProps) {
     <TileShell bg="#165fcf" height={185} onClick={p.onClick} label={p.title}>
       {midGlows}
       <GlassDot />
-      <img alt="" src={A.iconCheckRing} className="absolute" style={{ left: 'calc(50% - 42.5px)', top: 16 }} />
+      <Centered x={79.5} y={57}>
+        <img alt="" src={A.iconCheckRing} />
+      </Centered>
       <GameText {...p} w={136} />
       {p.done && <DoneBadge />}
     </TileShell>

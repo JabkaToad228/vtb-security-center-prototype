@@ -58,7 +58,7 @@ export function FraudPatrol() {
       <GameScreen title="Фрод-патруль">
         <GameIntro
           bg="#004fc6"
-          icon={<img alt="" src={A.iconChatSearch} className="translate-x-[10px]" />}
+          icon={<img alt="" src={A.iconChatSearch} />}
           title="Найдите ловушки на экране"
           text={`${patrolLevels.length} поддельных экрана: SMS, страница оплаты и сообщение «из ЦБ». Нажимайте на всё, что выдаёт мошенников. Лишние нажатия снижают результат.`}
           onStart={start}
